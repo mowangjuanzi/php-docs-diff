@@ -83,9 +83,9 @@ function foreachDir(string $en_dir, string $zh_dir, string $parent_root, OutputI
     ->addOption("pull", 'p', InputOption::VALUE_NEGATABLE, "是否拉取最新 en 代码")
     ->addArgument("dir", InputArgument::IS_ARRAY, "目录名称，如果不指定则为全部", [])
     ->setCode(function (InputInterface $input, OutputInterface $output) {
-        $parent_root = realpath("../");
-        $en_doc_root = realpath("../en");
-        $zh_doc_root = realpath("../zh");
+        $parent_root = realpath(__DIR__ . "/../");
+        $en_doc_root = realpath(__DIR__ . "/../en");
+        $zh_doc_root = realpath(__DIR__ . "/../zh");
 
         // 判断是否拉取最新 en 代码
         $pull = $input->getOption("pull");
