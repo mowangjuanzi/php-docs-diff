@@ -8,7 +8,7 @@ use Symfony\Component\Console\SingleCommandApplication;
 
 require __DIR__ . "/vendor/autoload.php";
 
-function foreachDir($en_dir, $zh_dir, $parent_root)
+function foreachDir(string $en_dir, string $zh_dir, string $parent_root, OutputInterface $output)
 {
     $zh_file_map = [];
 
@@ -28,9 +28,11 @@ function foreachDir($en_dir, $zh_dir, $parent_root)
     /** @var SplFileInfo $item */
     foreach ($en_iterator as $item) {
         if ($item->isDir()) {
-            foreachDir($en_dir . "/" . $item->getFilename(), $zh_dir . "/" . $item->getFilename(), $parent_root);
+            if ($item->getFilename()[0] !== '.') {
+                foreachDir($en_dir . "/" . $item->getFilename(), $zh_dir . "/" . $item->getFilename(), $parent_root, $output);
+            }
         } else {
-            if (!in_array($item->getExtension(), ['xml', 'ent']) || preg_match("/entities.*.xml/", $item->getFilename()) == 1) {
+            if (!in_array($item->getExtension(), ['xml', 'ent']) || $item->getFilename()[0] === '.' || preg_match("/entities.*.xml/", $item->getFilename()) == 1) {
                 continue;
             }
 
@@ -39,12 +41,12 @@ function foreachDir($en_dir, $zh_dir, $parent_root)
             $en_commit_id = trim($en_commit_id);
 
             if (empty($en_commit_id)) {
-                dd("1111", "cd {$item->getPath()} && git log -1 --pretty=%H ./{$item->getFilename()} ");
+                $output->writeln("出错: " . "cd {$item->getPath()} && git log -1 --pretty=%H ./{$item->getFilename()} ");
             }
 
             if (!isset($zh_file_map[$item->getFilename()])) {
                 if ($item->getFilename() != 'versions.xml') {
-                    dump("缺失：" . substr($item->getPathname(), strlen($parent_root) + 1));
+                    $output->writeln("缺失：" . substr($item->getPathname(), strlen($parent_root) + 1));
                 }
                 continue;
             }
@@ -63,7 +65,7 @@ function foreachDir($en_dir, $zh_dir, $parent_root)
             }
 
             if ($zh_commit_id != $en_commit_id) {
-                dump("翻译：" . substr($item->getPathname(), strlen($parent_root) + 1) . " " . $zh_commit_id);
+                $output->writeln("翻译：" . substr($item->getPathname(), strlen($parent_root) + 1) . " " . $zh_commit_id);
             }
 
             unset($zh_file_map[$item->getFilename()]);
@@ -71,7 +73,7 @@ function foreachDir($en_dir, $zh_dir, $parent_root)
     }
 
     foreach ($zh_file_map as $item) {
-        dump("删除：" . substr($item, strlen($parent_root) + 1));
+        $output->writeln("删除：" . substr($item, strlen($parent_root) + 1));
     }
 }
 
@@ -96,10 +98,10 @@ function foreachDir($en_dir, $zh_dir, $parent_root)
         if ($dirs) {
             foreach ($dirs as $item) {
                 $item = ltrim($item, './');
-                foreachDir($en_doc_root . "/" . $item, $zh_doc_root . "/" . $item, $parent_root);
+                foreachDir($en_doc_root . "/" . $item, $zh_doc_root . "/" . $item, $parent_root, $output);
             }
         } else {
-            foreachDir($en_doc_root, $zh_doc_root, $parent_root);
+            foreachDir($en_doc_root, $zh_doc_root, $parent_root, $output);
         }
 
     })->run();
