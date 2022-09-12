@@ -21,9 +21,14 @@ const FlagDelete = 1 << 2; // 待删除的
  * @param int $flags 设置输出格式 默认 FlagTranslate | FlagMissing | FlagDelete
  * @return void
  */
-function foreachDir(string $en_dir, string $zh_dir, string $parent_root, OutputInterface $output, int $flags = 0)
+function foreachDir(string $en_dir, string $zh_dir, string $parent_root, OutputInterface $output, int $flags = 0): void
 {
     $zh_file_map = [];
+
+    $tmp_en_iterator = [
+        'dir' => [],
+        "file" => []
+    ];
 
     if (is_dir($zh_dir)) {
         $zh_iterator = new FilesystemIterator($zh_dir);
@@ -37,11 +42,6 @@ function foreachDir(string $en_dir, string $zh_dir, string $parent_root, OutputI
     }
 
     $en_iterator = new FilesystemIterator($en_dir);
-
-    $tmp_en_iterator = [
-        'dir' => [],
-        "file" => []
-    ];
 
     /** @var SplFileInfo $item */
     foreach ($en_iterator as $item) {
@@ -70,11 +70,11 @@ function foreachDir(string $en_dir, string $zh_dir, string $parent_root, OutputI
             $output->writeln("出错: " . "cd {$item->getPath()} && git log -1 --pretty=%H ./{$item->getFilename()} ");
         }
 
-        // version.xml 不用翻译
-        if ($item->getFilename() == 'versions.xml') {
-            if (isset($zh_file_map['versions.xml'])) {
+        // 检测不用翻译的文件
+        if (!is_translatable($item->getFilename())) {
+            if (isset($zh_file_map[$item->getFilename()])) {
                 $output->writeln("删除：" . substr($item, strlen($parent_root) + 1));
-            };
+            }
 
             continue;
         }
@@ -121,7 +121,7 @@ function foreachDir(string $en_dir, string $zh_dir, string $parent_root, OutputI
 
 (new SingleCommandApplication())
     ->setName("docs-diff")
-    ->setVersion("0.0.2")
+    ->setVersion("0.0.3")
     ->addOption("pull", 'p', InputOption::VALUE_NEGATABLE, "是否拉取最新 en 代码")
     ->addOption("missing", 'm', InputOption::VALUE_NEGATABLE, "是否忽略未翻译的")
     ->addOption("translate", 't', InputOption::VALUE_NEGATABLE, "是否忽略未翻译到最新的")
@@ -140,7 +140,7 @@ function foreachDir(string $en_dir, string $zh_dir, string $parent_root, OutputI
         $flags = FlagDelete | FlagTranslate;
 
         $flag_miss = $input->getOption('missing');
-        if ($flag_miss != true) {
+        if (!$flag_miss) {
             $flags = $flags | FlagMissing;
         }
 
@@ -154,5 +154,4 @@ function foreachDir(string $en_dir, string $zh_dir, string $parent_root, OutputI
         } else {
             foreachDir($en_doc_root, $zh_doc_root, $parent_root, $output, $flags);
         }
-
     })->run();
