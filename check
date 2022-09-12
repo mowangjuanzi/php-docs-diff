@@ -1,0 +1,32 @@
+#!/bin/bash
+cd doc-base && git pull && cd ..
+cd phd && git pull && cd ..
+php diff/index.php install
+php diff/index.php language
+php diff/index.php -m reference/array
+php diff/index.php -m reference/classobj
+php diff/index.php -m reference/csprng
+php diff/index.php -m reference/datetime
+php diff/index.php -m reference/dir
+php diff/index.php -m reference/errorfunc
+php diff/index.php -m reference/exec
+php diff/index.php -m reference/filesystem
+php diff/index.php -m reference/fpm
+php diff/index.php -m reference/funchand
+php diff/index.php -m reference/info
+php diff/index.php -m reference/json
+php diff/index.php -m reference/mail
+php diff/index.php -m reference/math
+php diff/index.php -m reference/misc
+php diff/index.php -m reference/network
+php diff/index.php -m reference/opcache
+php diff/index.php -m reference/outcontrol
+php diff/index.php -m reference/password
+php diff/index.php -m reference/pcre
+php diff/index.php -m reference/reflection
+php diff/index.php -m reference/spl
+php diff/index.php -m reference/stream
+php diff/index.php -m reference/strings
+php diff/index.php -m reference/url
+php diff/index.php -m reference/var
+php diff/index.php -m features security
