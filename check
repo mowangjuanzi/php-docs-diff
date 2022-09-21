@@ -1,6 +1,8 @@
 #!/bin/bash
 cd doc-base && git pull && cd ..
 cd phd && git pull && cd ..
+cd en && git pull && cd ..
+php diff/index.php appendices
 php diff/index.php install
 php diff/index.php language
 php diff/index.php -m reference/array
