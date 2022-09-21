@@ -71,7 +71,7 @@ function foreachDir(string $en_dir, string $zh_dir, string $parent_root, OutputI
         }
 
         // 检测不用翻译的文件
-        if (!is_translatable($item->getFilename())) {
+        if (!is_translatable($item->getFilename()) && !str_ends_with($item->getPath(), 'appendices/migration56')) {
             if (isset($zh_file_map[$item->getFilename()])) {
                 $output->writeln("删除：" . substr($item, strlen($parent_root) + 1));
             }
