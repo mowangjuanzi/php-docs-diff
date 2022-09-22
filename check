@@ -2,9 +2,14 @@
 cd doc-base && git pull && cd ..
 cd phd && git pull && cd ..
 cd en && git pull && cd ..
-php diff/index.php appendices
 php diff/index.php install
 php diff/index.php language
+php diff/index.php -m appendices
+php diff/index.php -m features
+php diff/index.php -m security
+php diff/index.php -m faq
+php diff/index.php -m chmonly
+php diff/index.php -m chapters
 php diff/index.php -m reference/array
 php diff/index.php -m reference/classobj
 php diff/index.php -m reference/csprng
