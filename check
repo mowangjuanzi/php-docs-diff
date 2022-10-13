@@ -20,6 +20,7 @@ php diff/index.php -m reference/exec
 php diff/index.php -m reference/filesystem
 php diff/index.php -m reference/fpm
 php diff/index.php -m reference/funchand
+php diff/index.php -m reference/hash
 php diff/index.php -m reference/info
 php diff/index.php -m reference/json
 php diff/index.php -m reference/mail
