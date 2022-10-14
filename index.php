@@ -50,6 +50,11 @@ const ZH_DIR = __DIR__ . "/../zh/";
                     continue;
                 }
 
+                // 判断扩展名
+                if (!in_array($item->getExtension(), ['xml', 'ant'])) {
+                    continue;
+                }
+
                 // 如果需要查询的文件是指定文件，那么就跳过所有跟该文件无关的文件
                 if ($file && $file != $item->getBasename()) {
                     continue;
