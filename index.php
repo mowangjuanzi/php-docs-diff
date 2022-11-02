@@ -68,9 +68,9 @@ const ZH_DIR = __DIR__ . "/../zh/";
                 if (!is_translatable($item->getFilename())  && !str_ends_with($item->getPath(), 'appendices/migration56')) {
 
                     // 判断是否在中文版本存在
-                    if (file_exists($zh_item)) {
-                        $output->writeln("删除: " . str_replace(ZH_DIR, '', $zh_item));
-                    }
+//                    if (file_exists($zh_item)) {
+//                        $output->writeln("删除: " . str_replace(ZH_DIR, '', $zh_item));
+//                    }
 
                     continue;
                 }
