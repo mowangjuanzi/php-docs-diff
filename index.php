@@ -13,8 +13,9 @@ const ZH_DIR = __DIR__ . "/../zh/";
 
 (new SingleCommandApplication())
     ->setName("docs-diff")
-    ->setVersion("0.1.0")
+    ->setVersion("0.1.1")
     ->addOption("missing", 'm', InputOption::VALUE_NEGATABLE, "是否忽略未翻译的")
+    ->addOption('perfect', 'p', InputOption::VALUE_NEGATABLE, "是否忽略为翻译完成的")
     ->addArgument("dir", InputArgument::IS_ARRAY, "目录/文件名称，如果不指定则为全部", [])
     ->setCode(function (InputInterface $input, OutputInterface $output) {
         $dirs = $input->getArgument("dir");
@@ -22,6 +23,9 @@ const ZH_DIR = __DIR__ . "/../zh/";
 
         // 忽略未翻译的
         $flag_miss = $input->getOption('missing');
+
+        // 忽略未翻译完成的
+        $flag_perfect = $input->getOption('perfect');
 
         foreach ($dirs as $dir) {
             $en_full_dir = EN_DIR . $dir;
@@ -86,11 +90,16 @@ const ZH_DIR = __DIR__ . "/../zh/";
                 // 对比中英版本号是否一致
                 $en_commit = trim(shell_exec("git -C {$item->getPath()} log -1 --pretty=%H ./{$item->getFilename()}"));
                 $regex = "'<!--\s*EN-Revision:\s*(.+)\s*Maintainer:\s*(.+)\s*Status:\s*(.+)\s*-->'U";
-                preg_match ($regex, file_get_contents($zh_item), $zh_commit);
-                $zh_commit = trim($zh_commit[1] ?? '');
+                preg_match ($regex, file_get_contents($zh_item), $propertry);
+
+                $zh_commit = trim($propertry[1] ?? '');
 
                 if ($en_commit != $zh_commit) {
                     $output->writeln("翻译: " . str_replace(ZH_DIR, '', $zh_item) . " $zh_commit");
+                } elseif (!$flag_perfect) {
+                    if ($propertry[3] != 'ready') {
+                        $output->writeln("完善: " . str_replace(ZH_DIR, '', $zh_item));
+                    }
                 }
             }
         }
