@@ -97,7 +97,7 @@ const ZH_DIR = __DIR__ . "/../zh/";
                 if ($en_commit != $zh_commit) {
                     $output->writeln("翻译: " . str_replace(ZH_DIR, '', $zh_item) . " $zh_commit");
                 } elseif (!$flag_perfect) {
-                    if ($propertry[3] != 'ready') {
+                    if (trim($propertry[3]) != 'ready') {
                         $output->writeln("完善: " . str_replace(ZH_DIR, '', $zh_item));
                     }
                 }
